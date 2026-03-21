@@ -1,0 +1,54 @@
+services:
+  postgresql:
+    image: postgres:17.9-alpine
+    container_name: postgresql
+    environment:
+      - POSTGRES_DB=artifactory
+      - POSTGRES_USER=jfrog-pg-admin
+      - POSTGRES_PASSWORD=rEPlACe_THIS_WEAK_PASSWORD_1234
+    ports:
+      - 5432:5432
+    volumes:
+      - postgresql_data:/var/lib/postgresql/data
+      - /etc/localtime:/etc/localtime:ro
+    restart: always
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "10"
+    ulimits:
+      nproc: 65535
+      nofile:
+        soft: 32000
+        hard: 40000
+
+  artifactory:
+    platform: linux/amd64
+    build:
+      context: .
+    environment:
+      - JF_SHARED_DATABASE_URL=jdbc:postgresql://postgresql:5432/artifactory
+      - JF_SHARED_DATABASE_DRIVER=org.postgresql.Driver
+      - JF_ROUTER_ENTRYPOINTS_EXTERNALPORT=8082
+      - JF_SHARED_DATABASE_TYPE=postgresql
+      - JF_SHARED_DATABASE_USERNAME=jfrog-pg-admin
+      - JF_SHARED_DATABASE_PASSWORD=rEPlACe_THIS_WEAK_PASSWORD_1234
+      - EXTRA_JAVA_OPTIONS=-javaagent:/opt/jfrog/artifactory/app/artifactory/jfrog-artifactory-license-patcher-1.0.jar
+    ports:
+      - 8081:8081
+      - 8082:8082
+    volumes:
+      - ./system.yaml:/opt/jfrog/artifactory/var/etc/system.yaml
+      - jfrog_data:/var/opt/jfrog/artifactory
+    depends_on:
+      - postgresql
+    ulimits:
+      nproc: 65535
+      nofile:
+        soft: 32000
+        hard: 40000
+
+volumes:
+  postgresql_data:
+  jfrog_data:
