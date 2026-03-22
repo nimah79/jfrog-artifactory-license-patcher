@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>icu.lama</groupId>
+    <groupId>com.nimah79</groupId>
     <artifactId>jfrog-artifactory-license-patcher</artifactId>
     <version>1.0</version>
     <packaging>jar</packaging>
@@ -60,8 +60,8 @@
                             <transformers>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                                     <manifestEntries>
-                                        <Premain-Class>icu.lama.artifactory.agent.AgentMain</Premain-Class>
-                                        <Main-Class>icu.lama.artifactory.agent.AgentMain</Main-Class>
+                                        <Premain-Class>com.nimah79.artifactory.agent.AgentMain</Premain-Class>
+                                        <Main-Class>com.nimah79.artifactory.agent.AgentMain</Main-Class>
                                         <Can-Redefine-Classes>true</Can-Redefine-Classes>
                                         <Can-Retransform-Classes>true</Can-Retransform-Classes>
                                     </manifestEntries>

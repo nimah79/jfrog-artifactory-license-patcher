@@ -1,6 +1,6 @@
-package icu.lama.artifactory.agent;
+package com.nimah79.artifactory.agent;
 
-import icu.lama.artifactory.agent.patches.LicensePatcher;
+import com.nimah79.artifactory.agent.patches.LicensePatcher;
 
 import java.lang.instrument.Instrumentation;
 

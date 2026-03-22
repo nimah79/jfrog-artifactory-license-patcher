@@ -1,4 +1,4 @@
-package icu.lama.artifactory.agent.patches;
+package com.nimah79.artifactory.agent.patches;
 
 import javassist.CtBehavior;
 import javassist.CtClass;

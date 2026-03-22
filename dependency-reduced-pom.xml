@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>icu.lama</groupId>
+  <groupId>com.nimah79</groupId>
   <artifactId>jfrog-artifactory-license-patcher</artifactId>
   <version>1.0</version>
   <build>
@@ -35,8 +35,8 @@
               <transformers>
                 <transformer>
                   <manifestEntries>
-                    <Premain-Class>icu.lama.artifactory.agent.AgentMain</Premain-Class>
-                    <Main-Class>icu.lama.artifactory.agent.AgentMain</Main-Class>
+                    <Premain-Class>com.nimah79.artifactory.agent.AgentMain</Premain-Class>
+                    <Main-Class>com.nimah79.artifactory.agent.AgentMain</Main-Class>
                     <Can-Redefine-Classes>true</Can-Redefine-Classes>
                     <Can-Retransform-Classes>true</Can-Retransform-Classes>
                   </manifestEntries>
