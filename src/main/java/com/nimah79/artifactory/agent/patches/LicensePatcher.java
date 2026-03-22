@@ -84,7 +84,7 @@ public class LicensePatcher extends ClassPatch {
                 "    java.util.Calendar cal = java.util.Calendar.getInstance();" +
                 "    cal.add(java.util.Calendar.YEAR, 30);" +
                 "    license.setValidUntil(cal.getTime());" +
-                "    license.setType(org.jfrog.license.legacy.License.Type.COMMERCIAL);" +
+                "    license.setType(org.jfrog.license.legacy.License.Type.HA);" +
                 "    org.jfrog.license.legacy.SignedLicense signedLicense = new org.jfrog.license.legacy.SignedLicense();" +
                 "    org.jfrog.license.legacy.JsonLicenseSerializer serializer = new org.jfrog.license.legacy.JsonLicenseSerializer();" +
                 "    try { java.lang.reflect.Field f = org.jfrog.license.legacy.SignedLicense.class.getDeclaredField(\"license\"); f.setAccessible(true); f.set(signedLicense, serializer.serialize(license)); } catch (Exception e) { throw new RuntimeException(e); }" +
@@ -138,11 +138,11 @@ public class LicensePatcher extends ClassPatch {
             "{" +
             "    System.out.println(\"[License Patcher] Creating hardcoded license\");" +
             "    org.jfrog.license.api.License license = new org.jfrog.license.api.License();" +
-            "    license.setVersion(1);" +
+            "    license.setVersion(2);" +
             "    license.setValidateOnline(java.lang.Boolean.FALSE);" +
             "    java.util.Map products = new java.util.LinkedHashMap();" +
             "    org.jfrog.license.api.Product product = new org.jfrog.license.api.Product();" +
-            "    product.setId(\"1\");" +
+            "    product.setId(\"artifactory\");" +
             "    product.setOwner(\"nimah79\");" +
             "    product.setType(org.jfrog.license.api.Product.Type.ENTERPRISE_PLUS);" +
             "    products.put(\"artifactory\", product);" +
@@ -154,11 +154,11 @@ public class LicensePatcher extends ClassPatch {
             "{" +
             "    System.out.println(\"[License Patcher] load() returning hardcoded products\");" +
             "    org.jfrog.license.api.License license = new org.jfrog.license.api.License();" +
-            "    license.setVersion(1);" +
+            "    license.setVersion(2);" +
             "    license.setValidateOnline(java.lang.Boolean.FALSE);" +
             "    java.util.Map products = new java.util.LinkedHashMap();" +
             "    org.jfrog.license.api.Product product = new org.jfrog.license.api.Product();" +
-            "    product.setId(\"1\");" +
+            "    product.setId(\"artifactory\");" +
             "    product.setOwner(\"nimah79\");" +
             "    product.setType(org.jfrog.license.api.Product.Type.ENTERPRISE_PLUS);" +
             "    products.put(\"artifactory\", product);" +
@@ -232,12 +232,12 @@ public class LicensePatcher extends ClassPatch {
             "{" +
             "    System.out.println(\"[License Patcher] JFrogLicenseManager load() returning hardcoded license\");" +
             "    org.jfrog.license.multiplatform.License license = new org.jfrog.license.multiplatform.License();" +
-            "    license.setVersion(1);" +
+            "    license.setVersion(2);" +
             "    license.setValidateOnline(java.lang.Boolean.FALSE);" +
             "    java.util.Map products = new java.util.LinkedHashMap();" +
             "    org.jfrog.license.multiplatform.SignedProduct signedProduct = new org.jfrog.license.multiplatform.SignedProduct();" +
             "    org.jfrog.license.api.Product product = new org.jfrog.license.api.Product();" +
-            "    product.setId(\"1\");" +
+            "    product.setId(\"artifactory\");" +
             "    product.setOwner(\"nimah79\");" +
             "    product.setType(org.jfrog.license.api.Product.Type.ENTERPRISE_PLUS);" +
             "    signedProduct.setProduct(product);" +
@@ -347,7 +347,7 @@ public class LicensePatcher extends ClassPatch {
                         "    java.util.Calendar cal = java.util.Calendar.getInstance();" +
                         "    cal.add(java.util.Calendar.YEAR, 30);" +
                         "    license.setValidUntil(cal.getTime());" +
-                        "    license.setType(org.jfrog.license.legacy.License.Type.COMMERCIAL);" +
+                        "    license.setType(org.jfrog.license.legacy.License.Type.HA);" +
                         "    org.jfrog.license.legacy.SignedLicense signedLicense = new org.jfrog.license.legacy.SignedLicense();" +
                         "    org.jfrog.license.legacy.a serializer = new org.jfrog.license.legacy.a();" +
                         "    try { java.lang.reflect.Field f = org.jfrog.license.legacy.SignedLicense.class.getDeclaredField(\"license\"); f.setAccessible(true); f.set(signedLicense, serializer.a(license)); } catch (Exception e) { throw new RuntimeException(e); }" +
