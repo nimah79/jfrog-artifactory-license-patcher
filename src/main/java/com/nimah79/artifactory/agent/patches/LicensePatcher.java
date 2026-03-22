@@ -16,7 +16,8 @@ public class LicensePatcher extends ClassPatch {
               "org.jfrog.license.api.LicenseManager",
               "org.jfrog.license.multiplatform.JFrogLicenseManager",
               "org.jfrog.license.multiplatform.SignedLicense",
-              "org.jfrog.license.legacy.b");
+              "org.jfrog.license.legacy.b",
+              "org.jfrog.license.multiplatform.SignedProduct");
     }
 
     @Override
@@ -34,6 +35,8 @@ public class LicensePatcher extends ClassPatch {
                 return patchMultiplatformSignedLicense(clazz);
             } else if (className.equals("org.jfrog.license.legacy.b")) {
                 return patchLegacyB(clazz);
+            } else if (className.equals("org.jfrog.license.multiplatform.SignedProduct")) {
+                return patchSignedProduct(clazz);
             }
         } catch (Exception e) {
             System.out.println("[License Patcher] Error patching class " + className + ": " + e.getMessage());
@@ -236,11 +239,7 @@ public class LicensePatcher extends ClassPatch {
             "    license.setValidateOnline(java.lang.Boolean.FALSE);" +
             "    java.util.Map products = new java.util.LinkedHashMap();" +
             "    org.jfrog.license.multiplatform.SignedProduct signedProduct = new org.jfrog.license.multiplatform.SignedProduct();" +
-            "    org.jfrog.license.api.Product product = new org.jfrog.license.api.Product();" +
-            "    product.setId(\"artifactory\");" +
-            "    product.setOwner(\"nimah79\");" +
-            "    product.setType(org.jfrog.license.api.Product.Type.ENTERPRISE_PLUS);" +
-            "    signedProduct.setProduct(product);" +
+            "    signedProduct.setProduct(\"artifactory\");" +
             "    products.put(\"artifactory\", signedProduct);" +
             "    license.setProducts(products);" +
             "    return license;" +
@@ -283,6 +282,50 @@ public class LicensePatcher extends ClassPatch {
                 .collect(Collectors.toList());
         for (CtBehavior method : signMethods) {
             method.setBody("{}");
+        }
+
+        clazz.detach();
+        return clazz.toBytecode();
+    }
+
+    private byte[] patchSignedProduct(CtClass clazz) throws Throwable {
+        // Patch constructor with parameters to be empty
+        List<CtConstructor> constructors = Arrays.stream(clazz.getDeclaredConstructors())
+                .collect(Collectors.toList());
+        for (CtConstructor constructor : constructors) {
+            if (constructor.getParameterTypes().length == 3) {
+                constructor.setBody("{}");
+            }
+        }
+
+        // Patch verify method to be empty
+        List<CtBehavior> verifyMethods = Arrays.stream(clazz.getDeclaredBehaviors())
+                .filter(it -> "verify".equals(it.getMethodInfo().getName()))
+                .collect(Collectors.toList());
+        for (CtBehavior verify : verifyMethods) {
+            verify.setBody("{}");
+        }
+
+        // Patch parseProduct to return hardcoded product
+        List<CtBehavior> parseProductMethods = Arrays.stream(clazz.getDeclaredBehaviors())
+                .filter(it -> "parseProduct".equals(it.getMethodInfo().getName()))
+                .collect(Collectors.toList());
+        for (CtBehavior parseProduct : parseProductMethods) {
+            parseProduct.setBody(
+                "{" +
+                "    System.out.println(\"[License Patcher] SignedProduct.parseProduct() returning hardcoded product\");" +
+                "    org.jfrog.license.api.Product product = new org.jfrog.license.api.Product();" +
+                "    product.setTrial(false);" +
+                "    product.setId(\"artifactory\");" +
+                "    product.setOwner(\"nimah79\");" +
+                "    product.setType(org.jfrog.license.api.Product.Type.ENTERPRISE_PLUS);" +
+                "    java.util.Calendar cal = java.util.Calendar.getInstance();" +
+                "    product.setExpires(cal.setValidFrom());" +
+                "    cal.add(java.util.Calendar.YEAR, 30);" +
+                "    product.setExpires(cal.getTime());" +
+                "    return product;" +
+                "}"
+            );
         }
 
         clazz.detach();
