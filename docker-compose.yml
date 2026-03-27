@@ -2,6 +2,7 @@ services:
   postgresql:
     image: postgres:17.9-alpine
     container_name: postgresql
+    restart: unless-stopped
     environment:
       - POSTGRES_DB=artifactory
       - POSTGRES_USER=jfrog-pg-admin
@@ -11,7 +12,6 @@ services:
     volumes:
       - postgresql_data:/var/lib/postgresql/data
       - /etc/localtime:/etc/localtime:ro
-    restart: always
     logging:
       driver: json-file
       options:
@@ -27,6 +27,7 @@ services:
     platform: linux/amd64
     build:
       context: .
+    restart: unless-stopped
     environment:
       - JF_SHARED_DATABASE_URL=jdbc:postgresql://postgresql:5432/artifactory
       - JF_SHARED_DATABASE_DRIVER=org.postgresql.Driver
