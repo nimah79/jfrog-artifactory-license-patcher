@@ -2,6 +2,7 @@ package com.nimah79.artifactory.agent.patches;
 
 import javassist.ClassPool;
 import javassist.CtClass;
+import javassist.LoaderClassPath;
 
 import java.io.ByteArrayInputStream;
 import java.lang.instrument.ClassFileTransformer;
@@ -21,12 +22,17 @@ abstract public class ClassPatch implements ClassFileTransformer {
     public final byte[] transform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws IllegalClassFormatException {
         var clazz = className.replace("/", ".");
         if (targetClasses.contains(clazz)) {
-            System.out.println("[License Patcher] Patching class: " + clazz + ", source = " + protectionDomain.getCodeSource().getLocation().toString());
+            System.out.println("[License Patcher] Patching class: " + clazz + " (loader = " + loader + ", source = " + protectionDomain.getCodeSource().getLocation() + ")");
+            // The classes being patched live inside webapp classloaders. The default
+            // ClassPool can only see the system classpath, so without appending the
+            // defining loader here, every generated body that references sibling
+            // classes (License, Product, SignedLicense, ...) fails to compile.
             var ctPool = ClassPool.getDefault();
+            ctPool.appendClassPath(new LoaderClassPath(loader));
 
             try {
                 if (classBeingRedefined == null) {
-                    return this.onTransform(clazz, ctPool.makeClass(new ByteArrayInputStream(classfileBuffer)), classfileBuffer);
+                    return this.onTransform(loader, clazz, ctPool.makeClass(new ByteArrayInputStream(classfileBuffer)), classfileBuffer);
                 } else {
                     return this.onRetransform(clazz, ctPool.makeClass(new ByteArrayInputStream(classfileBuffer)), classfileBuffer, classBeingRedefined);
                 }
@@ -38,7 +44,7 @@ abstract public class ClassPatch implements ClassFileTransformer {
         return classfileBuffer;
     }
 
-    byte[] onTransform(String className, CtClass clazz, byte[] classBuf) throws Throwable {
+    byte[] onTransform(ClassLoader loader, String className, CtClass clazz, byte[] classBuf) throws Throwable {
         return classBuf;
     }
 
