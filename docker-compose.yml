@@ -36,6 +36,15 @@ services:
       - JF_SHARED_DATABASE_USERNAME=jfrog-pg-admin
       - JF_SHARED_DATABASE_PASSWORD=rEPlACe_THIS_WEAK_PASSWORD_1234
       - EXTRA_JAVA_OPTIONS=-javaagent:/opt/jfrog/artifactory/app/artifactory/jfrog-artifactory-license-patcher-1.0.jar
+      # Optional license customization (see README "Configuration"):
+      # - LICENSE_OWNER=Acme Corp
+      # - LICENSE_VALID_YEARS=100
+      # - LICENSE_PRODUCT_IDS=artifactory,xray
+      # - LICENSE_VALID_FROM=2026-01-01
+      # - LICENSE_EXPIRES=2126-01-01
+      # - LICENSE_PRODUCT_TYPE=ENTERPRISE_PLUS
+      # - LICENSE_LEGACY_TYPE=HA
+      # - LICENSE_QUANTITY=1000
     ports:
       - 8081:8081
       - 8082:8082

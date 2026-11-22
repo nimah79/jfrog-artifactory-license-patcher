@@ -33,6 +33,45 @@ docker compose up
 
 ![JFrog Artifactory licenses page](images/jfrog-artifactory-licenses-page.jpg)
 
+## Configuration
+
+The patched license values are fully customizable via environment variables (preferred) or, as a fallback, JVM system properties. When neither is set, the hardcoded defaults below are used.
+
+| Environment variable | System property | Description | Default |
+|---|---|---|---|
+| `LICENSE_OWNER` | `license.owner` | Owner/company shown on the licenses page | `nimah79` |
+| `LICENSE_VALID_YEARS` | `license.validYears` | License duration in years (used when `LICENSE_EXPIRES` is not set) | `30` |
+| `LICENSE_PRODUCT_IDS` | `license.productIds` | Comma-separated product IDs included in the license. `artifactory` must always be present. | `artifactory,xray,distribution,jfconnect,pipelines,mission-control,metadata,evidence` |
+| `LICENSE_VALID_FROM` | `license.validFrom` | License start date, `yyyy-MM-dd` or `yyyy-MM-dd'T'HH:mm:ss` | now (at license creation) |
+| `LICENSE_EXPIRES` | `license.expires` | License expiry date, same formats as above | `LICENSE_VALID_FROM` + `LICENSE_VALID_YEARS` years |
+| `LICENSE_PRODUCT_TYPE` | `license.productType` | Product license type (multiplatform `Product.Type` enum name) | `ENTERPRISE_PLUS` |
+| `LICENSE_LEGACY_TYPE` | `license.legacyType` | Legacy license type (`legacy.License.Type` enum name) | `HA` |
+| `LICENSE_QUANTITY` | `license.quantity` | Legacy license quantity | `1000` |
+
+Invalid values are logged as warnings and fall back to the defaults, so a bad configuration can never break startup. The agent prints the effective configuration to the log at startup (look for `[License Patcher] Effective license config: ...`).
+
+### Examples
+
+Environment variables (Docker Compose):
+
+```yaml
+services:
+  artifactory:
+    environment:
+      - EXTRA_JAVA_OPTIONS=-javaagent:/opt/jfrog/artifactory/app/artifactory/jfrog-artifactory-license-patcher-1.0.jar
+      - LICENSE_OWNER=Acme Corp
+      - LICENSE_VALID_YEARS=100
+      - LICENSE_PRODUCT_IDS=artifactory,xray
+      - LICENSE_VALID_FROM=2026-01-01
+      - LICENSE_EXPIRES=2126-01-01
+```
+
+JVM system properties (alternative to env, e.g. via `EXTRA_JAVA_OPTIONS` or `setenv.sh`):
+
+```shell
+EXTRA_JAVA_OPTIONS=-javaagent:/opt/jfrog/artifactory/app/artifactory/jfrog-artifactory-license-patcher-1.0.jar -Dlicense.owner="Acme Corp" -Dlicense.validYears=100
+```
+
 ## Building the javaagent
 
 The prebuilt jar file of the javaagent is available in `jfrog-artifactory-license-patcher-1.0.jar`. However, if you have modified the source code, you can build the jar file using the following command:

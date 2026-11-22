@@ -60,16 +60,19 @@ public class LicensePatcher extends ClassPatch {
         return clazz.toBytecode();
     }
 
+    private static final String DATE_FIELDS =
+            "java.util.Date validFrom = com.nimah79.artifactory.agent.Licenses.validFrom();"
+                    + "java.util.Date expires = com.nimah79.artifactory.agent.Licenses.expires();";
+
     private String makeProductBody(String productId) {
         return "{"
+                + DATE_FIELDS
                 + "    org.jfrog.license.api.Product p = new org.jfrog.license.api.Product();"
                 + "    p.setId(\"" + productId + "\");"
                 + "    p.setOwner(com.nimah79.artifactory.agent.Licenses.OWNER);"
-                + "    java.util.Calendar cal = java.util.Calendar.getInstance();"
-                + "    p.setValidFrom(cal.getTime());"
-                + "    cal.add(java.util.Calendar.YEAR, com.nimah79.artifactory.agent.Licenses.VALID_YEARS);"
-                + "    p.setExpires(cal.getTime());"
-                + "    p.setType(org.jfrog.license.api.Product.Type.ENTERPRISE_PLUS);"
+                + "    p.setValidFrom(validFrom);"
+                + "    p.setExpires(expires);"
+                + "    p.setType(org.jfrog.license.api.Product.Type.valueOf(com.nimah79.artifactory.agent.Licenses.PRODUCT_TYPE));"
                 + "    p.setTrial(false);"
                 + "    return p;"
                 + "}";
@@ -77,14 +80,13 @@ public class LicensePatcher extends ClassPatch {
 
     private String makeSignedProductBody(String productId) {
         return "{"
+                + DATE_FIELDS
                 + "    org.jfrog.license.api.Product p = new org.jfrog.license.api.Product();"
                 + "    p.setId(\"" + productId + "\");"
                 + "    p.setOwner(com.nimah79.artifactory.agent.Licenses.OWNER);"
-                + "    java.util.Calendar cal = java.util.Calendar.getInstance();"
-                + "    p.setValidFrom(cal.getTime());"
-                + "    cal.add(java.util.Calendar.YEAR, com.nimah79.artifactory.agent.Licenses.VALID_YEARS);"
-                + "    p.setExpires(cal.getTime());"
-                + "    p.setType(org.jfrog.license.api.Product.Type.ENTERPRISE_PLUS);"
+                + "    p.setValidFrom(validFrom);"
+                + "    p.setExpires(expires);"
+                + "    p.setType(org.jfrog.license.api.Product.Type.valueOf(com.nimah79.artifactory.agent.Licenses.PRODUCT_TYPE));"
                 + "    p.setTrial(false);"
                 + "    org.jfrog.license.multiplatform.SignedProduct sp = new org.jfrog.license.multiplatform.SignedProduct(p, null, null);"
                 + "    return sp;"
@@ -94,6 +96,7 @@ public class LicensePatcher extends ClassPatch {
     private String hardcodedApiLicenseBody() {
         return "{"
                 + "    System.out.println(\"[License Patcher] Creating hardcoded api.License\");"
+                + DATE_FIELDS
                 + "    org.jfrog.license.api.License license = new org.jfrog.license.api.License();"
                 + "    license.setVersion(2);"
                 + "    license.setValidateOnline(java.lang.Boolean.FALSE);"
@@ -103,11 +106,9 @@ public class LicensePatcher extends ClassPatch {
                 + "        org.jfrog.license.api.Product p = new org.jfrog.license.api.Product();"
                 + "        p.setId(ids[i]);"
                 + "        p.setOwner(com.nimah79.artifactory.agent.Licenses.OWNER);"
-                + "        java.util.Calendar cal = java.util.Calendar.getInstance();"
-                + "        p.setValidFrom(cal.getTime());"
-                + "        cal.add(java.util.Calendar.YEAR, com.nimah79.artifactory.agent.Licenses.VALID_YEARS);"
-                + "        p.setExpires(cal.getTime());"
-                + "        p.setType(org.jfrog.license.api.Product.Type.ENTERPRISE_PLUS);"
+                + "        p.setValidFrom(validFrom);"
+                + "        p.setExpires(expires);"
+                + "        p.setType(org.jfrog.license.api.Product.Type.valueOf(com.nimah79.artifactory.agent.Licenses.PRODUCT_TYPE));"
                 + "        p.setTrial(false);"
                 + "        products.put(ids[i], p);"
                 + "    }"
@@ -119,17 +120,16 @@ public class LicensePatcher extends ClassPatch {
     private String hardcodedApiProductsBody() {
         return "{"
                 + "    System.out.println(\"[License Patcher] Returning hardcoded products map\");"
+                + DATE_FIELDS
                 + "    java.util.Map products = new java.util.LinkedHashMap();"
                 + "    String[] ids = com.nimah79.artifactory.agent.Licenses.PRODUCT_IDS;"
                 + "    for (int i = 0; i < ids.length; i++) {"
                 + "        org.jfrog.license.api.Product p = new org.jfrog.license.api.Product();"
                 + "        p.setId(ids[i]);"
                 + "        p.setOwner(com.nimah79.artifactory.agent.Licenses.OWNER);"
-                + "        java.util.Calendar cal = java.util.Calendar.getInstance();"
-                + "        p.setValidFrom(cal.getTime());"
-                + "        cal.add(java.util.Calendar.YEAR, com.nimah79.artifactory.agent.Licenses.VALID_YEARS);"
-                + "        p.setExpires(cal.getTime());"
-                + "        p.setType(org.jfrog.license.api.Product.Type.ENTERPRISE_PLUS);"
+                + "        p.setValidFrom(validFrom);"
+                + "        p.setExpires(expires);"
+                + "        p.setType(org.jfrog.license.api.Product.Type.valueOf(com.nimah79.artifactory.agent.Licenses.PRODUCT_TYPE));"
                 + "        p.setTrial(false);"
                 + "        products.put(ids[i], p);"
                 + "    }"
@@ -235,18 +235,17 @@ public class LicensePatcher extends ClassPatch {
 
     private byte[] patchLegacyLicenseManager(ClassLoader loader, CtClass clazz) throws Throwable {
         String legacyBody = "{"
+                + DATE_FIELDS
                 + "    org.jfrog.license.legacy.License lic = new org.jfrog.license.legacy.License();"
                 + "    lic.setProductId(1);"
                 + "    lic.setProductName(\"Artifactory\");"
                 + "    lic.setSubject(com.nimah79.artifactory.agent.Licenses.OWNER);"
                 + "    lic.setCompany(com.nimah79.artifactory.agent.Licenses.OWNER);"
-                + "    java.util.Calendar cal = java.util.Calendar.getInstance();"
-                + "    lic.setIssued(cal.getTime());"
-                + "    lic.setValidFrom(cal.getTime());"
-                + "    cal.add(java.util.Calendar.YEAR, com.nimah79.artifactory.agent.Licenses.VALID_YEARS);"
-                + "    lic.setValidUntil(cal.getTime());"
-                + "    lic.setQuantity(1000);"
-                + "    lic.setType(org.jfrog.license.legacy.License.Type.HA);"
+                + "    lic.setIssued(validFrom);"
+                + "    lic.setValidFrom(validFrom);"
+                + "    lic.setValidUntil(expires);"
+                + "    lic.setQuantity(com.nimah79.artifactory.agent.Licenses.QUANTITY);"
+                + "    lic.setType(org.jfrog.license.legacy.License.Type.valueOf(com.nimah79.artifactory.agent.Licenses.LEGACY_TYPE));"
                 + "    org.jfrog.license.legacy.SignedLicense sl = new org.jfrog.license.legacy.SignedLicense(lic, null, null);"
                 + "    return sl;"
                 + "}";
@@ -289,18 +288,17 @@ public class LicensePatcher extends ClassPatch {
 
     private byte[] patchLegacyB(ClassLoader loader, CtClass clazz) throws Throwable {
         String legacyBody = "{"
+                + DATE_FIELDS
                 + "    org.jfrog.license.legacy.License lic = new org.jfrog.license.legacy.License();"
                 + "    lic.setProductId(1);"
                 + "    lic.setProductName(\"Artifactory\");"
                 + "    lic.setSubject(com.nimah79.artifactory.agent.Licenses.OWNER);"
                 + "    lic.setCompany(com.nimah79.artifactory.agent.Licenses.OWNER);"
-                + "    java.util.Calendar cal = java.util.Calendar.getInstance();"
-                + "    lic.setIssued(cal.getTime());"
-                + "    lic.setValidFrom(cal.getTime());"
-                + "    cal.add(java.util.Calendar.YEAR, com.nimah79.artifactory.agent.Licenses.VALID_YEARS);"
-                + "    lic.setValidUntil(cal.getTime());"
-                + "    lic.setQuantity(1000);"
-                + "    lic.setType(org.jfrog.license.legacy.License.Type.HA);"
+                + "    lic.setIssued(validFrom);"
+                + "    lic.setValidFrom(validFrom);"
+                + "    lic.setValidUntil(expires);"
+                + "    lic.setQuantity(com.nimah79.artifactory.agent.Licenses.QUANTITY);"
+                + "    lic.setType(org.jfrog.license.legacy.License.Type.valueOf(com.nimah79.artifactory.agent.Licenses.LEGACY_TYPE));"
                 + "    org.jfrog.license.legacy.SignedLicense sl = new org.jfrog.license.legacy.SignedLicense(lic, null, null);"
                 + "    return sl;"
                 + "}";
@@ -424,6 +422,7 @@ public class LicensePatcher extends ClassPatch {
 
     private byte[] patchJFrogLicenseManager(ClassLoader loader, CtClass clazz) throws Throwable {
         String body = "{"
+                + DATE_FIELDS
                 + "    org.jfrog.license.multiplatform.License lic = new org.jfrog.license.multiplatform.License();"
                 + "    lic.setVersion(2);"
                 + "    lic.setValidateOnline(java.lang.Boolean.FALSE);"
@@ -433,11 +432,9 @@ public class LicensePatcher extends ClassPatch {
                 + "        org.jfrog.license.api.Product p = new org.jfrog.license.api.Product();"
                 + "        p.setId(ids[i]);"
                 + "        p.setOwner(com.nimah79.artifactory.agent.Licenses.OWNER);"
-                + "        java.util.Calendar cal = java.util.Calendar.getInstance();"
-                + "        p.setValidFrom(cal.getTime());"
-                + "        cal.add(java.util.Calendar.YEAR, com.nimah79.artifactory.agent.Licenses.VALID_YEARS);"
-                + "        p.setExpires(cal.getTime());"
-                + "        p.setType(org.jfrog.license.api.Product.Type.ENTERPRISE_PLUS);"
+                + "        p.setValidFrom(validFrom);"
+                + "        p.setExpires(expires);"
+                + "        p.setType(org.jfrog.license.api.Product.Type.valueOf(com.nimah79.artifactory.agent.Licenses.PRODUCT_TYPE));"
                 + "        p.setTrial(false);"
                 + "        org.jfrog.license.multiplatform.SignedProduct sp = new org.jfrog.license.multiplatform.SignedProduct(p, null, null);"
                 + "        products.put(ids[i], sp);"
@@ -464,6 +461,7 @@ public class LicensePatcher extends ClassPatch {
 
     private byte[] patchMultiplatformA(ClassLoader loader, CtClass clazz) throws Throwable {
         String body = "{"
+                + DATE_FIELDS
                 + "    org.jfrog.license.multiplatform.License lic = new org.jfrog.license.multiplatform.License();"
                 + "    lic.setVersion(2);"
                 + "    lic.setValidateOnline(java.lang.Boolean.FALSE);"
@@ -473,11 +471,9 @@ public class LicensePatcher extends ClassPatch {
                 + "        org.jfrog.license.api.Product p = new org.jfrog.license.api.Product();"
                 + "        p.setId(ids[i]);"
                 + "        p.setOwner(com.nimah79.artifactory.agent.Licenses.OWNER);"
-                + "        java.util.Calendar cal = java.util.Calendar.getInstance();"
-                + "        p.setValidFrom(cal.getTime());"
-                + "        cal.add(java.util.Calendar.YEAR, com.nimah79.artifactory.agent.Licenses.VALID_YEARS);"
-                + "        p.setExpires(cal.getTime());"
-                + "        p.setType(org.jfrog.license.api.Product.Type.ENTERPRISE_PLUS);"
+                + "        p.setValidFrom(validFrom);"
+                + "        p.setExpires(expires);"
+                + "        p.setType(org.jfrog.license.api.Product.Type.valueOf(com.nimah79.artifactory.agent.Licenses.PRODUCT_TYPE));"
                 + "        p.setTrial(false);"
                 + "        org.jfrog.license.multiplatform.SignedProduct sp = new org.jfrog.license.multiplatform.SignedProduct(p, null, null);"
                 + "        products.put(ids[i], sp);"
@@ -508,13 +504,12 @@ public class LicensePatcher extends ClassPatch {
 
     private byte[] patchApiProduct(ClassLoader loader, CtClass clazz) throws Throwable {
         String ctorBody = "{"
+                + DATE_FIELDS
                 + "    this.id = \"artifactory\";"
                 + "    this.owner = com.nimah79.artifactory.agent.Licenses.OWNER;"
-                + "    java.util.Calendar cal = java.util.Calendar.getInstance();"
-                + "    this.validFrom = cal.getTime();"
-                + "    cal.add(java.util.Calendar.YEAR, com.nimah79.artifactory.agent.Licenses.VALID_YEARS);"
-                + "    this.expires = cal.getTime();"
-                + "    this.type = org.jfrog.license.api.Product.Type.ENTERPRISE_PLUS;"
+                + "    this.validFrom = validFrom;"
+                + "    this.expires = expires;"
+                + "    this.type = org.jfrog.license.api.Product.Type.valueOf(com.nimah79.artifactory.agent.Licenses.PRODUCT_TYPE);"
                 + "    this.trial = false;"
                 + "    this.signature = $1 == null ? null : $1.getSignature();"
                 + "}";
